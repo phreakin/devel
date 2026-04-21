@@ -6,7 +6,7 @@ LaughTrack is a mobile-first, cinematic comedy community UI/UX prototype that bl
 - Mockumentary cinematic flair (freeze-frame feel, grain overlays, dramatic punchy motion)
 
 ## Run
-Open `/home/runner/work/devel/devel/index.html` in a browser.
+Open `index.html` in a browser.
 
 ## Included core screens and behaviors
 - Home feed with featured cinematic hero and rotating comedic headlines

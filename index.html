@@ -158,8 +158,8 @@
   <script>
     const communities = ["r/SatireLab", "r/MemeStudio", "r/MockumentaryClub", "r/HotTakeStage"];
     const seedPosts = [
-      { id: 1, community: "r/SatireLab", author: "@onion_ninja", title: "Breaking: Cat elected as productivity consultant", body: "Board applauds strategic napping roadmap.", score: 128, reactions: ["😂 42","🔥 13","🎬 9"], comments:[{a:"@cutscene_king",t:"Add a sequel where the cat fires the CEO."},{a:"@scripted_chaos",t:"Director's cut: all meetings in cardboard boxes."}] },
-      { id: 2, community: "r/MemeStudio", author: "@pixel_punch", title: "My poll: best excuse for being late?", body: "A) Time travel traffic B) Method acting C) Burrito explosion", score: 77, reactions:["🤣 28","🫡 7"], comments:[{a:"@prop_master",t:"B, always B."}] }
+      { id: 1, community: "r/SatireLab", author: "@onion_ninja", title: "Breaking: Cat elected as productivity consultant", body: "Board applauds strategic napping roadmap.", score: 128, reactions: ["😂 42","🔥 13","🎬 9"], comments:[{author:"@cutscene_king",text:"Add a sequel where the cat fires the CEO."},{author:"@scripted_chaos",text:"Director's cut: all meetings in cardboard boxes."}] },
+      { id: 2, community: "r/MemeStudio", author: "@pixel_punch", title: "My poll: best excuse for being late?", body: "A) Time travel traffic B) Method acting C) Burrito explosion", score: 77, reactions:["🤣 28","🫡 7"], comments:[{author:"@prop_master",text:"B, always B."}] }
     ];
     let posts = [...seedPosts];
     const headlines = [
@@ -229,7 +229,7 @@
       document.getElementById('dialogTitle').textContent = post.title;
       document.getElementById('dialogBody').innerHTML = `
         <p>${post.body}</p>
-        <div class="comments">${post.comments.map(c => `<div class="comment"><strong>${c.a}</strong>: ${c.t}</div>`).join('')}</div>
+        <div class="comments">${post.comments.map(c => `<div class="comment"><strong>${c.author}</strong>: ${c.text}</div>`).join('')}</div>
         <div class="reactions"><button class="btn">😂</button><button class="btn">🔥</button><button class="btn">🎬 Director's Cut</button></div>
       `;
       d.showModal();
@@ -255,7 +255,7 @@
 
     document.getElementById('loadMore').onclick = () => {
       const n = posts.length + 1;
-      posts.push({ id: Date.now()+n, community: communities[n % communities.length], author: '@guest_' + n, title: `Infinite Scroll Bit #${n}`, body: 'Fresh chaos loaded from the comedic multiverse.', score: (n*3)%50, reactions:['😂 3'], comments:[{a:'@lurker',t:'I regret nothing.'}] });
+      posts.push({ id: Date.now()+n, community: communities[n % communities.length], author: '@guest_' + n, title: `Infinite Scroll Bit #${n}`, body: 'Fresh chaos loaded from the comedic multiverse.', score: (n*3)%50, reactions:['😂 3'], comments:[{author:'@lurker',text:'I regret nothing.'}] });
       renderFeed();
       notify('New chaos arrived. Hydrate and keep scrolling.');
     };
