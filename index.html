@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaughTrack — Cinematic Comedy Community</title>
+  <style>
+    :root {
+      --bg: #111217;
+      --bg-soft: #1c1e26;
+      --card: #202331;
+      --text: #f5f7ff;
+      --muted: #b7bed4;
+      --accent-yellow: #ffd447;
+      --accent-red: #ff4d5a;
+      --accent-blue: #57b8ff;
+      --good: #73e37b;
+      --bad: #ff6f8d;
+      --radius: 14px;
+      --shadow: 0 10px 24px rgba(0,0,0,.35);
+      --grain: radial-gradient(circle at 10% 20%, rgba(255,255,255,.05), transparent 40%), radial-gradient(circle at 90% 80%, rgba(255,255,255,.03), transparent 30%);
+    }
+    body.light { --bg:#f7f7fb; --bg-soft:#ffffff; --card:#ffffff; --text:#1a1d29; --muted:#4d556d; --shadow:0 10px 20px rgba(22,26,43,.12); }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.4;
+    }
+    .cinematic::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: var(--grain);
+      pointer-events: none;
+      opacity: .6;
+      mix-blend-mode: soft-light;
+      z-index: 999;
+    }
+    header { position: sticky; top: 0; z-index: 20; background: linear-gradient(180deg, rgba(0,0,0,.65), transparent), var(--bg); padding: .75rem; border-bottom: 1px solid rgba(255,255,255,.09); }
+    .topbar, .actions { display: flex; gap: .5rem; align-items: center; }
+    .topbar { justify-content: space-between; flex-wrap: wrap; }
+    .brand { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; letter-spacing: .04em; font-size: 1.4rem; color: var(--accent-yellow); }
+    .btn, input, select, textarea { border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: var(--bg-soft); color: var(--text); padding: .5rem .7rem; }
+    .btn { cursor: pointer; font-weight: 700; }
+    .btn:hover { transform: translateY(-1px); }
+    .layout { display: grid; grid-template-columns: 1fr; gap: .75rem; padding: .75rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 960px) { .layout { grid-template-columns: 240px 1fr 300px; } }
+    .panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: .75rem; border: 1px solid rgba(255,255,255,.08); }
+    .hero { position: relative; overflow: hidden; }
+    .hero h1 { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; margin: 0; font-size: clamp(1.5rem, 4vw, 2.4rem); }
+    .headline { color: var(--accent-yellow); margin: .25rem 0 .5rem; }
+    .sub { color: var(--muted); }
+    .badge { display:inline-flex; align-items:center; gap:.25rem; font-size:.75rem; background: rgba(87,184,255,.18); border:1px solid rgba(87,184,255,.5); border-radius:999px; padding:.15rem .5rem; }
+    .feed { display: grid; gap: .75rem; }
+    .post { display: grid; grid-template-columns: 52px 1fr; gap: .75rem; }
+    .votes { display:flex; flex-direction:column; align-items:center; gap:.25rem; }
+    .votes button { width: 40px; height: 32px; font-size:1rem; }
+    .score { font-weight: 800; }
+    .title { font-weight: 800; font-size: 1.1rem; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    .reactions { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem; }
+    .reaction { font-size:.9rem; }
+    .comments { margin-top: .6rem; border-left: 2px solid rgba(255,255,255,.15); padding-left: .6rem; }
+    .comment { margin-top: .5rem; }
+    .notification { animation: pop .24s ease-out; }
+    @keyframes pop { 0%{ transform: scale(.92); opacity:.2; } 100%{ transform: scale(1); opacity:1; } }
+    .freeze { animation: freeze 1s steps(2,end); }
+    @keyframes freeze { 0%,40%{ filter: contrast(1.25) saturate(1.2); } 41%,100%{ filter:none; } }
+    dialog { border: 1px solid rgba(255,255,255,.2); border-radius: 14px; width:min(700px,92vw); background:var(--bg-soft); color:var(--text); }
+    dialog::backdrop { background: rgba(0,0,0,.6); }
+    .split { display:grid; gap:.6rem; }
+    @media (min-width: 700px) { .split { grid-template-columns:1fr 1fr; } }
+    .hidden { display:none; }
+    .small { font-size:.8rem; color:var(--muted); }
+  </style>
+</head>
+<body class="cinematic" data-theme="dark">
+  <header>
+    <div class="topbar">
+      <div class="brand">LAUGHTRACK 🎬</div>
+      <div class="actions">
+        <button id="themeBtn" class="btn" aria-label="Toggle dark mode">Dark Mode 🌙</button>
+        <button id="cinemaBtn" class="btn" aria-label="Toggle cinematic mode">Cinematic Mode 🎥</button>
+        <button id="createBtn" class="btn" aria-label="Create a post">Add your two cents (or your entire wallet)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <h2>Communities</h2>
+      <nav id="communities"></nav>
+      <hr />
+      <h3>Search & Discovery</h3>
+      <input id="search" placeholder="Spotlight tags, memes, creators..." aria-label="Search" />
+      <p class="small">Trending tags: #ChaoticChef #MicrowaveBurrito #DirectorCutMeme</p>
+    </aside>
+
+    <section>
+      <article class="panel hero freeze" id="hero">
+        <span class="badge">🎞️ Rotating Headline</span>
+        <h1 id="heroTitle">This post is blowing up like a microwave burrito.</h1>
+        <p class="headline" id="heroSub">Featured from r/SatireLab</p>
+        <p class="sub">A comedy-magazine front page meets threaded community chaos.</p>
+      </article>
+
+      <section class="feed" id="feed" aria-live="polite"></section>
+      <button class="btn" id="loadMore">Load More Chaos</button>
+    </section>
+
+    <aside class="panel">
+      <h2>User Profile</h2>
+      <p><strong>@cinema_jester</strong> <span class="badge">🎬 Certified Chaos Contributor</span></p>
+      <p class="small">Most upvoted joke: "The meeting that could've been an email trilogy."</p>
+      <p class="small">Most chaotic thread: "AI writes my wedding vows"</p>
+      <h3>Notifications</h3>
+      <div id="notifications"></div>
+    </aside>
+  </main>
+
+  <dialog id="postDialog" aria-label="Post page">
+    <h2 id="dialogTitle">Post Scene</h2>
+    <div id="dialogBody"></div>
+    <button class="btn" id="closeDialog">Cut Scene ✂️</button>
+  </dialog>
+
+  <dialog id="createDialog" aria-label="Create post flow">
+    <h2>Create Post Flow</h2>
+    <div class="split">
+      <div>
+        <label>Type
+          <select id="postType">
+            <option>Text Post</option>
+            <option>Meme Upload</option>
+            <option>Poll</option>
+          </select>
+        </label>
+        <label>Title <input id="newTitle" placeholder="Punchline headline" /></label>
+        <label>Body <textarea id="newBody" rows="5" placeholder="Punchline helper: start with 'So there I was...' "></textarea></label>
+        <button class="btn" id="publishBtn">Roll Cameras 🎬</button>
+      </div>
+      <div>
+        <h3>Punchline Helper</h3>
+        <ul>
+          <li>Setup: ordinary moment goes wrong fast.</li>
+          <li>Twist: escalate with absurd confidence.</li>
+          <li>Tag: one short line that stings politely.</li>
+        </ul>
+      </div>
+    </div>
+    <button class="btn" id="closeCreate">Back to Feed</button>
+  </dialog>
+
+  <script>
+    const communities = ["r/SatireLab", "r/MemeStudio", "r/MockumentaryClub", "r/HotTakeStage"];
+    const seedPosts = [
+      { id: 1, community: "r/SatireLab", author: "@onion_ninja", title: "Breaking: Cat elected as productivity consultant", body: "Board applauds strategic napping roadmap.", score: 128, reactions: ["😂 42","🔥 13","🎬 9"], comments:[{a:"@cutscene_king",t:"Add a sequel where the cat fires the CEO."},{a:"@scripted_chaos",t:"Director's cut: all meetings in cardboard boxes."}] },
+      { id: 2, community: "r/MemeStudio", author: "@pixel_punch", title: "My poll: best excuse for being late?", body: "A) Time travel traffic B) Method acting C) Burrito explosion", score: 77, reactions:["🤣 28","🫡 7"], comments:[{a:"@prop_master",t:"B, always B."}] }
+    ];
+    let posts = [...seedPosts];
+    const headlines = [
+      ["Tonight at 9: The Thread Heard Around The Internet","Featured from r/MockumentaryClub"],
+      ["Local Meme Achieves Sentience, Demands Better Lighting","Featured from r/MemeStudio"],
+      ["Community Poll Ends in Dramatic Plot Twist","Featured from r/HotTakeStage"]
+    ];
+    let h = 0;
+
+    const feed = document.getElementById('feed');
+    const notifications = document.getElementById('notifications');
+
+    function notify(text) {
+      const n = document.createElement('div');
+      n.className = 'notification panel';
+      n.textContent = text;
+      notifications.prepend(n);
+      setTimeout(() => n.remove(), 3500);
+    }
+
+    function renderCommunities() {
+      const nav = document.getElementById('communities');
+      nav.innerHTML = communities.map(c => `<button class="btn" data-community="${c}">${c}</button>`).join(' ');
+      nav.querySelectorAll('button').forEach(btn => btn.onclick = () => renderFeed(btn.dataset.community));
+    }
+
+    function renderFeed(filter = '') {
+      const q = document.getElementById('search').value.toLowerCase();
+      const filtered = posts.filter(p => (!filter || p.community === filter) && (`${p.title} ${p.body} ${p.community}`.toLowerCase().includes(q)));
+      feed.innerHTML = filtered.map(p => `
+        <article class="panel post" data-id="${p.id}">
+          <div class="votes">
+            <button class="btn up" aria-label="Upvote">▲</button>
+            <div class="score">${p.score}</div>
+            <button class="btn down" aria-label="Downvote">▼</button>
+          </div>
+          <div>
+            <div class="title">${p.title}</div>
+            <div class="meta">${p.community} • ${p.author}</div>
+            <p>${p.body}</p>
+            <div class="reactions">${p.reactions.map(r => `<span class="reaction badge">${r}</span>`).join('')} <button class="btn open">Open Scene</button></div>
+            <div class="small">Threaded comments: ${p.comments.length}</div>
+          </div>
+        </article>`).join('');
+
+      feed.querySelectorAll('.post').forEach(node => {
+        const id = +node.dataset.id;
+        node.querySelector('.up').onclick = () => vote(id, 1);
+        node.querySelector('.down').onclick = () => vote(id, -1);
+        node.querySelector('.open').onclick = () => openPost(id);
+      });
+    }
+
+    function vote(id, delta) {
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+      post.score += delta;
+      renderFeed();
+      document.body.animate([{ transform:'translateX(0)' }, { transform:'translateX(1px)' }, { transform:'translateX(-1px)' }, { transform:'translateX(0)' }], { duration: 120 });
+      notify(delta > 0 ? "You boosted that joke into orbit 🚀" : "You roasted it gently 🔥");
+    }
+
+    function openPost(id) {
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+      const d = document.getElementById('postDialog');
+      document.getElementById('dialogTitle').textContent = post.title;
+      document.getElementById('dialogBody').innerHTML = `
+        <p>${post.body}</p>
+        <div class="comments">${post.comments.map(c => `<div class="comment"><strong>${c.a}</strong>: ${c.t}</div>`).join('')}</div>
+        <div class="reactions"><button class="btn">😂</button><button class="btn">🔥</button><button class="btn">🎬 Director's Cut</button></div>
+      `;
+      d.showModal();
+      notify("Scene transition complete. Cue dramatic zoom.");
+    }
+
+    document.getElementById('closeDialog').onclick = () => document.getElementById('postDialog').close();
+    document.getElementById('createBtn').onclick = () => document.getElementById('createDialog').showModal();
+    document.getElementById('closeCreate').onclick = () => document.getElementById('createDialog').close();
+
+    document.getElementById('publishBtn').onclick = () => {
+      const title = document.getElementById('newTitle').value.trim();
+      const body = document.getElementById('newBody').value.trim();
+      const type = document.getElementById('postType').value;
+      if (!title) return notify('Headline missing. Comedy court rejects your draft.');
+      posts.unshift({ id: Date.now(), community: 'r/SatireLab', author: '@cinema_jester', title: `${title} [${type}]`, body: body || 'No body text. Pure chaotic energy.', score: 1, reactions:['🎉 1'], comments:[] });
+      document.getElementById('createDialog').close();
+      renderFeed();
+      notify('You earned a badge: Certified Chaos Contributor');
+    };
+
+    document.getElementById('search').addEventListener('input', () => renderFeed());
+
+    document.getElementById('loadMore').onclick = () => {
+      const n = posts.length + 1;
+      posts.push({ id: Date.now()+n, community: communities[n % communities.length], author: '@guest_' + n, title: `Infinite Scroll Bit #${n}`, body: 'Fresh chaos loaded from the comedic multiverse.', score: (n*3)%50, reactions:['😂 3'], comments:[{a:'@lurker',t:'I regret nothing.'}] });
+      renderFeed();
+      notify('New chaos arrived. Hydrate and keep scrolling.');
+    };
+
+    document.getElementById('themeBtn').onclick = () => {
+      document.body.classList.toggle('light');
+      notify('Theme switched. Dramatic lighting adjusted.');
+    };
+
+    document.getElementById('cinemaBtn').onclick = () => {
+      document.body.classList.toggle('cinematic');
+      notify('Cinematic mode toggled. Grain and glory engaged.');
+    };
+
+    setInterval(() => {
+      h = (h + 1) % headlines.length;
+      document.getElementById('heroTitle').textContent = headlines[h][0];
+      document.getElementById('heroSub').textContent = headlines[h][1];
+    }, 3200);
+
+    renderCommunities();
+    renderFeed();
+    notify('Welcome back. The comments are already unhinged.');
+  </script>
+</body>
+</html>
