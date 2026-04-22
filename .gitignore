@@ -1,0 +1,28 @@
+# Ignore environment-specific files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# Composer
+vendor/
+composer.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+coverage/
