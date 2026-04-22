@@ -22,14 +22,23 @@ $config = ORMSetup::createAttributeMetadataConfiguration(
 );
 
 // Database connection
-$connection = DriverManager::getConnection([
-    'driver' => $dbDriver,
-    'host' => $dbHost,
-    'port' => $dbPort,
-    'dbname' => $dbName,
-    'user' => $dbUser,
-    'password' => $dbPass,
-], $config);
+if ($dbDriver === 'pdo_sqlite') {
+    $sqlitePath = $_ENV['DB_PATH'] ?? $dbName ?? ':memory:';
+
+    $connection = DriverManager::getConnection([
+        'driver' => 'pdo_sqlite',
+        'path' => $sqlitePath,
+    ], $config);
+} else {
+    $connection = DriverManager::getConnection([
+        'driver' => $dbDriver,
+        'host' => $dbHost,
+        'port' => $dbPort,
+        'dbname' => $dbName,
+        'user' => $dbUser,
+        'password' => $dbPass,
+    ], $config);
+}
 
 // Create EntityManager
 $entityManager = new EntityManager($connection, $config);

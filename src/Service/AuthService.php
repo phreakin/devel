@@ -11,6 +11,7 @@ use App\Entity\User;
 class AuthService
 {
     private string $jwtSecret;
+    private string $jwtSigningKey;
     private string $jwtAlgorithm = 'HS256';
     private int $jwtExpiration = 86400; // 24 hours
 
@@ -20,6 +21,7 @@ class AuthService
             throw new \InvalidArgumentException('JWT secret cannot be empty');
         }
         $this->jwtSecret = $jwtSecret;
+        $this->jwtSigningKey = hash('sha256', $jwtSecret, true);
     }
 
     /**
@@ -54,7 +56,7 @@ class AuthService
             'email' => $user->getEmail(),
         ];
 
-        return JWT::encode($payload, $this->jwtSecret, $this->jwtAlgorithm);
+        return JWT::encode($payload, $this->jwtSigningKey, $this->jwtAlgorithm);
     }
 
     /**
@@ -65,7 +67,13 @@ class AuthService
     public function validateToken(string $token): object
     {
         try {
-            return JWT::decode($token, new Key($this->jwtSecret, $this->jwtAlgorithm));
+            $decoded = JWT::decode($token, new Key($this->jwtSigningKey, $this->jwtAlgorithm));
+
+            if (!isset($decoded->user_id) || $decoded->user_id === '') {
+                throw new \Exception('Token missing user ID');
+            }
+
+            return $decoded;
         } catch (\Exception $e) {
             throw new \Exception("Invalid token: " . $e->getMessage());
         }
@@ -78,7 +86,7 @@ class AuthService
     {
         try {
             $decoded = $this->validateToken($token);
-            return $decoded->user_id;
+            return (string) $decoded->user_id;
         } catch (\Exception $e) {
             throw new \Exception("Failed to extract user ID from token: " . $e->getMessage());
         }

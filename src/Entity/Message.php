@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Ramsey\Uuid\Uuid;
@@ -22,6 +23,7 @@ class Message
     private string $id;
 
     #[ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
+    #[JoinColumn(name: 'conversationId', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Conversation $conversation;
 
     #[Column(type: Types::STRING, length: 10, options: ['default' => 'user'])]

@@ -117,4 +117,9 @@ class ApiResponse
 
         return json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
+
+    public function getBody(): string
+    {
+        return $this->toJson();
+    }
 }

@@ -25,12 +25,12 @@ class ConversationRepository
 
     public function findByUser(User $user): array
     {
-        return $this->repository->findBy(['user' => $user], ['createdAt' => 'DESC']);
+        return $this->repository->findBy(['user' => $user], ['createdAt' => 'ASC']);
     }
 
     public function findActiveByUser(User $user): array
     {
-        return $this->repository->findBy(['user' => $user, 'active' => true], ['updatedAt' => 'DESC']);
+        return $this->repository->findBy(['user' => $user, 'active' => true], ['createdAt' => 'ASC']);
     }
 
     public function findAll(): array

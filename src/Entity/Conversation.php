@@ -7,6 +7,7 @@ namespace App\Entity;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -25,6 +26,7 @@ class Conversation
     private string $id;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'conversations')]
+    #[JoinColumn(name: 'userId', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private User $user;
 
     #[Column(type: Types::STRING, length: 255)]
