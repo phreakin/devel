@@ -70,8 +70,131 @@ function buildDashboardState(): array
     return $state;
 }
 
+function episodeArtwork(string $label, string $accent): string
+{
+    $label = esc($label);
+    $accent = esc($accent);
+
+    $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" role="img" aria-label="{$label}">
+  <rect width="92" height="92" rx="8" fill="#ffffff"/>
+  <rect x="9" y="9" width="74" height="74" rx="6" fill="{$accent}"/>
+  <path d="M20 58L35 38l10 14 8-10 19 16H20Z" fill="#f6f2ff" opacity=".88"/>
+  <circle cx="66" cy="28" r="8" fill="#f6f2ff" opacity=".94"/>
+  <text x="46" y="81" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#070312">{$label}</text>
+</svg>
+SVG;
+
+    return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
+}
+
+function merchArtwork(string $label, string $accent): string
+{
+    $label = esc($label);
+    $accent = esc($accent);
+
+    $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" role="img" aria-label="{$label}">
+  <rect width="112" height="112" rx="12" fill="#ffffff"/>
+  <rect x="12" y="12" width="88" height="88" rx="10" fill="{$accent}"/>
+  <path d="M30 78V40h14l12 12 12-12h14v38H30Z" fill="#f6f2ff" opacity=".92"/>
+  <path d="M36 50h40" stroke="#070312" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+  <path d="M36 61h28" stroke="#070312" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+  <text x="56" y="99" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#070312">{$label}</text>
+</svg>
+SVG;
+
+    return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
+}
+
 function renderDashboard(array $state): string
 {
+    $episodes = [
+        [
+            'number' => 'Episode 01',
+            'status' => 'LIVE',
+            'statusClass' => 'live',
+            'title' => 'Signal Intake',
+            'release' => 'Broadcast date: April 22, 2026',
+            'style' => 'Format: live briefing',
+            'limited' => 'Live now on the main channel.',
+            'items' => [
+                'Opening sequence and orientation',
+                'Current system state and route map',
+                'Immediate operator actions',
+            ],
+            'cta' => 'Open live feed',
+            'art' => episodeArtwork('EP 01', '#17306e'),
+        ],
+        [
+            'number' => 'Episode 02',
+            'status' => 'COMING SOON',
+            'statusClass' => 'coming-soon',
+            'title' => 'Night Transmission',
+            'release' => 'Broadcast date: April 29, 2026',
+            'style' => 'Format: serialized update',
+            'limited' => 'Limited preview access only.',
+            'items' => [
+                'New archive segment',
+                'Expanded route coverage',
+                'Fresh utility panel',
+            ],
+            'cta' => 'Reserve preview',
+            'art' => episodeArtwork('EP 02', '#6a1a66'),
+        ],
+        [
+            'number' => 'Episode 03',
+            'status' => 'SOLD OUT',
+            'statusClass' => 'sold-out',
+            'title' => 'Offline Vault',
+            'release' => 'Broadcast date: May 6, 2026',
+            'style' => 'Format: collector drop',
+            'limited' => 'Archive bundle exhausted.',
+            'items' => [
+                'Recovered assets and notes',
+                'Behind-the-scenes log',
+                'Restricted extras bundle',
+            ],
+            'cta' => 'Join waitlist',
+            'art' => episodeArtwork('EP 03', '#6e1830'),
+        ],
+    ];
+
+    $merch = [
+        [
+            'name' => 'Signal Archive Tee',
+            'tag' => 'Core drop',
+            'price' => '$34',
+            'description' => 'Heavyweight black tee with cyan grid print and the archive crest.',
+            'cta' => 'Shop tee',
+            'accent' => '#17306e',
+        ],
+        [
+            'name' => 'Night Transmission Hoodie',
+            'tag' => 'Limited run',
+            'price' => '$68',
+            'description' => 'Oversized hoodie with magenta sleeve marks and back-panel art.',
+            'cta' => 'Shop hoodie',
+            'accent' => '#6a1a66',
+        ],
+        [
+            'name' => 'Broadcast Mug',
+            'tag' => 'Desk gear',
+            'price' => '$18',
+            'description' => 'Gloss mug for late-night edits, planning calls, and episode notes.',
+            'cta' => 'Shop mug',
+            'accent' => '#0e5f6f',
+        ],
+        [
+            'name' => 'Sticker Pack',
+            'tag' => 'Add-on',
+            'price' => '$12',
+            'description' => 'Die-cut decals built from the episode badges, crest, and grid line art.',
+            'cta' => 'Shop stickers',
+            'accent' => '#6e1830',
+        ],
+    ];
+
     ob_start();
     ?>
 <!doctype html>
@@ -80,188 +203,120 @@ function renderDashboard(array $state): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
-    <title><?= esc($state['appName']) ?> Control Center</title>
+    <title><?= esc($state['appName']) ?> Signal Archive</title>
     <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
-    <div class="page-shell">
-        <div class="ambient ambient-a"></div>
-        <div class="ambient ambient-b"></div>
+    <div class="grid-horizon" aria-hidden="true"></div>
 
-        <header class="topbar">
-            <div class="brand">
-                <div class="brand-mark">D</div>
-                <div>
-                    <div class="brand-kicker"><?= esc($state['appName']) ?></div>
-                    <div class="brand-title">Control Center</div>
-                </div>
-            </div>
+    <header class="site-header">
+        <div class="crest" aria-hidden="true"><span><?= esc(strtoupper(substr($state['appName'], 0, 2))) ?></span></div>
+        <nav aria-label="Primary">
+            <ul class="nav-list">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#episodes">Episodes</a></li>
+                <li><a href="#merch">Merch</a></li>
+                <li><a href="#signal">Signal</a></li>
+            </ul>
+        </nav>
+        <a class="cta-button" href="/api/health">Validate API</a>
+    </header>
 
-            <div class="status-strip">
-                <span class="status-chip status-chip-good">API ready</span>
-                <span class="status-chip"><?= esc(strtoupper($state['environment'])) ?></span>
-                <span class="status-chip"><?= esc($state['dbStatus'] === 'online' ? 'DB online' : 'DB offline') ?></span>
-            </div>
-        </header>
+    <main>
+        <section class="intro">
+            <h1><?= esc($state['appName']) ?> signal archive</h1>
+            <p>Neon broadcast layout with live, coming soon, and sold-out episode states wired into the homepage.</p>
+        </section>
 
-        <main class="dashboard">
-            <section class="hero">
-                <div class="hero-copy">
-                    <p class="eyebrow">Operational dashboard</p>
-                    <h1>Authentication, conversations, and AI workflows in one view.</h1>
-                    <p class="lede">
-                        This front page now acts as a working dashboard instead of a plain API landing page.
-                        It shows live service state, counts, and the route surface the app exposes.
-                    </p>
-                    <div class="hero-actions">
-                        <a class="button button-primary" href="/api/health">Check API health</a>
-                        <a class="button button-secondary" href="#routes">View routes</a>
-                    </div>
-                </div>
+        <section class="overview" id="overview">
+            <h2>Overview</h2>
+            <p>
+                This site is serving the requested horizon-grid theme with episode cards, compact utility panels,
+                and the same dark cyan-magenta palette from the document.
+            </p>
+        </section>
 
-                <aside class="hero-panel">
-                    <div class="panel-label">Current state</div>
-                    <div class="state-grid">
-                        <div>
-                            <span>Database</span>
-                            <strong><?= esc(ucfirst($state['dbStatus'])) ?></strong>
+        <section id="episodes">
+            <h2>Episodes</h2>
+            <div class="episodes">
+                <?php foreach ($episodes as $episode): ?>
+                    <article class="episode-card <?= esc($episode['statusClass']) ?>">
+                        <div class="episode-art"><?= esc(substr($episode['number'], -2)) ?></div>
+                        <div class="card-head">
+                            <h3 class="episode-number"><?= esc($episode['number']) ?></h3>
+                            <span class="status-badge"><?= esc($episode['status']) ?></span>
                         </div>
-                        <div>
-                            <span>JWT</span>
-                            <strong><?= esc(ucfirst($state['jwtStatus'])) ?></strong>
-                        </div>
-                        <div>
-                            <span>AI</span>
-                            <strong><?= esc(ucfirst($state['aiStatus'])) ?></strong>
-                        </div>
-                        <div>
-                            <span>Server time</span>
-                            <strong><?= esc(date('M j, g:i A')) ?></strong>
-                        </div>
-                    </div>
-                </aside>
-            </section>
-
-            <section class="metrics" aria-label="Key metrics">
-                <article class="metric">
-                    <span>Users</span>
-                    <strong><?= esc((string)($state['userCount'] ?? '—')) ?></strong>
-                    <p>Registered accounts in the local dataset.</p>
-                </article>
-                <article class="metric">
-                    <span>Conversations</span>
-                    <strong><?= esc((string)($state['conversationCount'] ?? '—')) ?></strong>
-                    <p>Saved chat threads available to the workspace.</p>
-                </article>
-                <article class="metric">
-                    <span>Messages</span>
-                    <strong><?= esc((string)($state['messageCount'] ?? '—')) ?></strong>
-                    <p>Persisted message count across conversations.</p>
-                </article>
-                <article class="metric">
-                    <span>Routes</span>
-                    <strong><?= esc((string)$state['routeCount']) ?></strong>
-                    <p>Public and API endpoints wired in the app.</p>
-                </article>
-            </section>
-
-            <section class="content-grid">
-                <section class="panel panel-wide" id="routes">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">API surface</p>
-                            <h2>Live routes</h2>
-                        </div>
-                        <span class="panel-note">JSON under <code>/api</code></span>
-                    </div>
-
-                    <div class="route-list">
-                        <div class="route-row"><span class="method method-get">GET</span><code>/api/health</code><span>Service health</span></div>
-                        <div class="route-row"><span class="method method-post">POST</span><code>/api/auth/register</code><span>Register user</span></div>
-                        <div class="route-row"><span class="method method-post">POST</span><code>/api/auth/login</code><span>Issue JWT</span></div>
-                        <div class="route-row"><span class="method method-post">POST</span><code>/api/conversations</code><span>Create thread</span></div>
-                        <div class="route-row"><span class="method method-get">GET</span><code>/api/conversations</code><span>List threads</span></div>
-                        <div class="route-row"><span class="method method-post">POST</span><code>/api/conversations/{conversationId}/messages</code><span>Add message</span></div>
-                        <div class="route-row"><span class="method method-get">GET</span><code>/api/conversations/{conversationId}/messages</code><span>Read history</span></div>
-                    </div>
-                </section>
-
-                <section class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">Latest threads</p>
-                            <h2>Recent conversations</h2>
-                        </div>
-                        <span class="panel-note">Updated latest first</span>
-                    </div>
-
-                    <?php if (!empty($state['latestConversations'])): ?>
-                        <div class="conversation-list">
-                            <?php foreach ($state['latestConversations'] as $conversation): ?>
-                                <article class="conversation-row">
-                                    <div>
-                                        <strong><?= esc($conversation['title']) ?></strong>
-                                        <span><?= esc($conversation['model']) ?></span>
-                                    </div>
-                                    <div class="conversation-meta">
-                                        <span><?= esc((string)$conversation['messageCount']) ?> messages</span>
-                                        <span><?= esc($conversation['updatedAt']) ?></span>
-                                    </div>
-                                </article>
+                        <h4><?= esc($episode['title']) ?></h4>
+                        <p class="release"><?= esc($episode['release']) ?></p>
+                        <p class="style-tag"><?= esc($episode['style']) ?></p>
+                        <p class="limited"><?= esc($episode['limited']) ?></p>
+                        <ul class="items">
+                            <?php foreach ($episode['items'] as $item): ?>
+                                <li><?= esc($item) ?></li>
                             <?php endforeach; ?>
+                        </ul>
+                        <div class="card-footer">
+                            <a class="card-cta" href="#signal"><?= esc($episode['cta']) ?></a>
+                            <img src="<?= esc($episode['art']) ?>" alt="<?= esc($episode['title']) ?> artwork">
                         </div>
-                    <?php else: ?>
-                        <div class="empty-state">
-                            <strong>No conversations yet.</strong>
-                            <p>Register a user, log in, and create a thread to populate this panel.</p>
-                        </div>
-                    <?php endif; ?>
-                </section>
-            </section>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
 
-            <section class="content-grid content-grid-bottom">
-                <section class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">Runbook</p>
-                            <h2>Local workflow</h2>
+        <section class="merch-section" id="merch">
+            <div class="section-head">
+                <div>
+                    <p class="section-kicker">Merch</p>
+                    <h2>Podcast gear</h2>
+                </div>
+                <a class="merch-partner-link" href="#signal">Partner store ready</a>
+            </div>
+            <p class="merch-intro">
+                This is a static merch block for the podcast brand. If you want live stock and checkout, we can wire this
+                to a merch partner API next.
+            </p>
+            <div class="merch-grid">
+                <?php foreach ($merch as $item): ?>
+                    <article class="merch-card">
+                        <div class="merch-art">
+                            <img src="<?= esc(merchArtwork($item['name'], $item['accent'])) ?>" alt="<?= esc($item['name']) ?> artwork">
                         </div>
-                    </div>
+                        <div class="merch-copy">
+                            <div class="merch-meta">
+                                <span><?= esc($item['tag']) ?></span>
+                                <strong><?= esc($item['price']) ?></strong>
+                            </div>
+                            <h3><?= esc($item['name']) ?></h3>
+                            <p><?= esc($item['description']) ?></p>
+                            <a class="card-cta" href="#signal"><?= esc($item['cta']) ?></a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
 
-                    <div class="runbook">
-                        <div>
-                            <span>Start schema</span>
-                            <code>php setup_db.php</code>
-                        </div>
-                        <div>
-                            <span>Run tests</span>
-                            <code>vendor/bin/phpunit</code>
-                        </div>
-                        <div>
-                            <span>Serve app</span>
-                            <code>php -S 127.0.0.1:8000 -t public public/index.php</code>
-                        </div>
-                    </div>
-                </section>
+        <section class="utility-section" id="signal">
+            <h2>Signal</h2>
+            <p>
+                API health is available at <code>/api/health</code>. Database state is <?= esc($state['dbStatus']) ?>,
+                JWT is <?= esc($state['jwtStatus']) ?>, and AI is <?= esc($state['aiStatus']) ?>.
+            </p>
+        </section>
 
-                <section class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">Status</p>
-                            <h2>Environment flags</h2>
-                        </div>
-                    </div>
-
-                    <div class="flag-list">
-                        <div><span>APP_ENV</span><strong><?= esc($state['environment']) ?></strong></div>
-                        <div><span>JWT_SECRET</span><strong><?= esc($state['jwtStatus']) ?></strong></div>
-                        <div><span>OPENAI_API_KEY</span><strong><?= esc($state['aiStatus']) ?></strong></div>
-                        <div><span>Database</span><strong><?= esc($state['dbStatus']) ?></strong></div>
-                    </div>
-                </section>
-            </section>
-        </main>
+        <section class="utility-section">
+            <h2>Runbook</h2>
+            <p>
+                Start the app with <code>php -S 127.0.0.1:8000 -t public public/index.php</code> and validate the
+                API with <code>curl http://127.0.0.1:8000/api/health</code>.
+            </p>
+        </section>
     </div>
+
+    <footer class="site-footer">
+        <div>Broadcast status: <?= esc(strtoupper($state['environment'])) ?></div>
+        <div class="tour-badge">Route count <?= esc((string)$state['routeCount']) ?></div>
+    </footer>
 </body>
 </html>
     <?php
